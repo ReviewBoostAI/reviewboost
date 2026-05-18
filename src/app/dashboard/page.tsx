@@ -1,459 +1,433 @@
 "use client";
 
-import { useState } from "react";
-
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
-
-import { reviews } from "@/data/reviews";
-import { analytics } from "@/data/analytics";
-import { aiReplies } from "@/data/replies";
-import { priorityData } from "@/data/priority";
-import { weeklyReport } from "@/data/weeklyReport";
-import { chartData } from "@/data/chartData";
-import { alerts } from "@/data/alerts";
+import { motion } from "framer-motion";
 
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
   ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  Tooltip,
 } from "recharts";
 
 export default function DashboardPage() {
 
-  const [generatedReplies, setGeneratedReplies] = useState<
-    Record<number, string>
-  >({});
+  const data = [
+    { day: "Mon", reputation: 3.8 },
+    { day: "Tue", reputation: 4.1 },
+    { day: "Wed", reputation: 4.0 },
+    { day: "Thu", reputation: 4.3 },
+    { day: "Fri", reputation: 4.5 },
+    { day: "Sat", reputation: 4.4 },
+    { day: "Sun", reputation: 4.6 },
+  ];
 
   return (
-    <main className="min-h-screen bg-[#081120] text-white flex">
+    <div className="flex">
 
       <Sidebar />
 
-      {/* Main Content */}
-      <section className="flex-1 p-8">
+      <main className="flex-1 min-h-screen bg-[#081120] text-white px-4 lg:px-8 py-24 lg:py-10">
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="max-w-7xl mx-auto">
 
-          <div>
-
-            <h1 className="text-4xl font-bold mb-2">
-              Mazzini Ristorante-Pizzeria 
-            </h1>
-
-            <p className="text-gray-400">
-              Jesolo Lido • AI reputation management
-            </p>
-
-          </div>
-
-          <button className="bg-blue-600 hover:bg-blue-700 transition px-5 py-3 rounded-xl">
-            Export Report
-          </button>
-
-        </div>
-
-        {/* Top Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-
-          <div className="bg-[#111827] border border-white/10 rounded-2xl p-6">
-
-            <p className="text-gray-400 mb-2">
-              Reputation Score
-            </p>
-
-            <h2 className="text-5xl font-bold">
-              {analytics.reputationScore}⭐
-            </h2>
-
-          </div>
-
-          <div className="bg-[#111827] border border-white/10 rounded-2xl p-6">
-
-            <p className="text-gray-400 mb-2">
-              Reviews Analyzed
-            </p>
-
-            <h2 className="text-5xl font-bold">
-              {analytics.totalReviews}
-            </h2>
-
-          </div>
-
-          <div className="bg-[#111827] border border-white/10 rounded-2xl p-6">
-
-            <p className="text-gray-400 mb-2">
-              Positive Sentiment
-            </p>
-
-            <h2 className="text-5xl font-bold text-green-400">
-              {analytics.positivePercentage}%
-            </h2>
-
-          </div>
-
-          <div className="bg-[#111827] border border-white/10 rounded-2xl p-6">
-
-            <p className="text-gray-400 mb-2">
-              Main Issue
-            </p>
-
-            <h2 className="text-3xl font-bold text-red-400">
-              {analytics.mainIssue}
-            </h2>
-
-          </div>
-
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* AI Insights */}
-          <div className="lg:col-span-2 bg-[#111827] border border-white/10 rounded-2xl p-6">
-
-            <h3 className="text-2xl font-semibold mb-8">
-              AI Insights
-            </h3>
-
-            <div className="space-y-5">
-
-              {/* Priority Detection */}
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-5">
-
-                <p className="text-blue-300 font-medium mb-2">
-                  Priority Detection
-                </p>
-
-                <p>
-                  Main operational issue detected:
-                  <span className="font-semibold">
-                    {" "}{priorityData.issue}
-                  </span>
-                </p>
-
-                <p className="mt-2 text-sm text-gray-400">
-                  Severity level:
-                  {" "}
-                  <span className="text-white">
-                    {priorityData.severity}
-                  </span>
-                </p>
-
-              </div>
-
-              {/* Dynamic Alerts */}
-              {alerts.map((alert) => (
-
-                <div
-                  key={alert.title}
-                  className={`rounded-xl p-5 border ${
-                    alert.type === "critical"
-                      ? "bg-red-500/10 border-red-500/20"
-                      : alert.type === "warning"
-                      ? "bg-yellow-500/10 border-yellow-500/20"
-                      : "bg-blue-500/10 border-blue-500/20"
-                  }`}
-                >
-
-                  <p
-                    className={`font-medium mb-2 ${
-                      alert.type === "critical"
-                        ? "text-red-300"
-                        : alert.type === "warning"
-                        ? "text-yellow-300"
-                        : "text-blue-300"
-                    }`}
-                  >
-                    {alert.title}
-                  </p>
-
-                  <p>
-                    {alert.message}
-                  </p>
-
-                </div>
-
-              ))}
-
-            </div>
-
-          </div>
-
-          {/* Recommended Actions */}
-          <div className="bg-[#111827] border border-white/10 rounded-2xl p-6">
-
-            <h3 className="text-2xl font-semibold mb-8">
-              Recommended Actions
-            </h3>
-
-            <div className="space-y-4">
-
-              <div className="border border-white/10 rounded-xl p-4">
-                Increase staff during peak evening hours.
-              </div>
-
-              <div className="border border-white/10 rounded-xl p-4">
-                Respond to recent negative reviews.
-              </div>
-
-              <div className="border border-white/10 rounded-xl p-4">
-                Improve kitchen speed consistency.
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Recent Reviews */}
-        <div className="mt-10 bg-[#111827] border border-white/10 rounded-2xl p-6">
-
-          <h3 className="text-2xl font-semibold mb-6">
-            Recent Reviews
-          </h3>
-
-          <div className="space-y-4">
-
-            {reviews.map((review) => (
-
-              <div
-                key={review.id}
-                className="border border-white/10 rounded-xl p-4"
-              >
-
-                <div className="flex items-center justify-between mb-2">
-
-                  <span className="font-medium">
-                    {review.name}
-                  </span>
-
-                  <span className="text-yellow-400">
-                    {"★".repeat(review.rating)}
-                  </span>
-
-                </div>
-
-                <p className="text-gray-400 mb-4">
-                  {review.review}
-                </p>
-
-                <div className="flex items-center justify-between">
-
-                  <span
-                    className={`text-sm px-3 py-1 rounded-full ${
-                      review.sentiment === "positive"
-                        ? "bg-green-500/10 text-green-400"
-                        : "bg-red-500/10 text-red-400"
-                    }`}
-                  >
-                    {review.issue}
-                  </span>
-
-                  <button
-                    onClick={() =>
-                      setGeneratedReplies({
-                        ...generatedReplies,
-                        [review.id]:
-                          aiReplies[review.issue] ||
-                          "Thank you for your feedback.",
-                      })
-                    }
-                    className="bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg text-sm"
-                  >
-                    Generate AI Reply
-                  </button>
-
-                </div>
-
-                {generatedReplies[review.id] && (
-
-                  <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4">
-
-                    <p className="text-sm text-gray-300 mb-2">
-                      AI Reply
-                    </p>
-
-                    <p className="text-white">
-                      {generatedReplies[review.id]}
-                    </p>
-
-                  </div>
-
-                )}
-
-              </div>
-
-            ))}
-
-          </div>
-
-        </div>
-
-        {/* Weekly Report */}
-        <div className="mt-10 bg-[#111827] border border-white/10 rounded-2xl p-6">
-
-          <div className="flex items-center justify-between mb-8">
+          {/* HEADER */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-12">
 
             <div>
 
-              <h3 className="text-2xl font-semibold">
-                {weeklyReport.title}
-              </h3>
+              <p className="text-blue-400 mb-3">
+                AI Reputation Dashboard
+              </p>
 
-              <p className="text-gray-400 mt-2">
-                AI-generated weekly reputation analysis
+              <h1 className="text-4xl lg:text-6xl font-bold mb-4">
+                Nome Ristorante
+              </h1>
+
+              <p className="text-gray-400 text-base lg:text-xl">
+                Real-time customer intelligence & operational insights.
               </p>
 
             </div>
 
-            <div className="bg-blue-500/10 border border-blue-500/20 text-blue-400 px-4 py-2 rounded-xl">
-              Updated today
-            </div>
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              className="bg-green-500/10 border border-green-500/20 text-green-400 px-6 py-4 rounded-2xl text-sm lg:text-lg w-fit"
+            >
+              Reputation improving ↗
+            </motion.div>
 
           </div>
 
-          {/* Summary */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-8">
+          {/* TOP METRICS */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-10"
+          >
 
-            <p className="text-lg leading-relaxed">
-              {weeklyReport.summary}
-            </p>
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              className="bg-gradient-to-br from-blue-500/20 to-blue-900/20 border border-blue-500/20 rounded-3xl p-5 lg:p-7"
+            >
+
+              <p className="text-gray-300 mb-4 text-sm lg:text-base">
+                Reputation Score
+              </p>
+
+              <h2 className="text-4xl lg:text-6xl font-bold mb-3">
+                4.6
+              </h2>
+
+              <p className="text-green-400 text-sm lg:text-base">
+                +12% this month
+              </p>
+
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white/5 border border-white/10 rounded-3xl p-5 lg:p-7"
+            >
+
+              <p className="text-gray-300 mb-4 text-sm lg:text-base">
+                Reviews Collected
+              </p>
+
+              <h2 className="text-4xl lg:text-6xl font-bold mb-3">
+                248
+              </h2>
+
+              <p className="text-blue-400 text-sm lg:text-base">
+                18 today
+              </p>
+
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white/5 border border-white/10 rounded-3xl p-5 lg:p-7"
+            >
+
+              <p className="text-gray-300 mb-4 text-sm lg:text-base">
+                Customer Satisfaction
+              </p>
+
+              <h2 className="text-4xl lg:text-6xl font-bold mb-3">
+                82%
+              </h2>
+
+              <p className="text-green-400 text-sm lg:text-base">
+                Positive trend
+              </p>
+
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              className="bg-gradient-to-br from-red-500/20 to-red-900/20 border border-red-500/20 rounded-3xl p-5 lg:p-7"
+            >
+
+              <p className="text-gray-300 mb-4 text-sm lg:text-base">
+                Active Alerts
+              </p>
+
+              <h2 className="text-4xl lg:text-6xl font-bold mb-3">
+                4
+              </h2>
+
+              <p className="text-red-400 text-sm lg:text-base">
+                Needs attention
+              </p>
+
+            </motion.div>
+
+          </motion.div>
+
+          {/* MAIN GRID */}
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 mb-8">
+
+            {/* REPUTATION GRAPH */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="lg:col-span-2 bg-white/5 border border-white/10 rounded-3xl p-6 lg:p-8"
+            >
+
+              <div className="flex items-center justify-between mb-8">
+
+                <h3 className="text-2xl lg:text-3xl font-bold">
+                  Reputation Trend
+                </h3>
+
+                <span className="text-gray-400 text-sm lg:text-base">
+                  Last 30 days
+                </span>
+
+              </div>
+
+              <div className="h-56 lg:h-72">
+
+                <ResponsiveContainer width="100%" height="100%">
+
+                  <AreaChart data={data}>
+
+                    <XAxis
+                      dataKey="day"
+                      stroke="#9CA3AF"
+                    />
+
+                    <Tooltip />
+
+                    <Area
+                      type="monotone"
+                      dataKey="reputation"
+                      stroke="#3B82F6"
+                      fill="#3B82F6"
+                      fillOpacity={0.25}
+                      strokeWidth={4}
+                    />
+
+                  </AreaChart>
+
+                </ResponsiveContainer>
+
+              </div>
+
+            </motion.div>
+
+            {/* AI SUMMARY */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-3xl p-6 lg:p-8"
+            >
+
+              <h3 className="text-2xl lg:text-3xl font-bold mb-8">
+                AI Summary
+              </h3>
+
+              <div className="space-y-5">
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-white/5 border border-white/10 rounded-2xl p-5"
+                >
+
+                  <p className="text-gray-300 leading-relaxed text-sm lg:text-base">
+                    Customer satisfaction increased after menu optimization.
+                  </p>
+
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-white/5 border border-white/10 rounded-2xl p-5"
+                >
+
+                  <p className="text-gray-300 leading-relaxed text-sm lg:text-base">
+                    Waiting time remains the primary operational issue.
+                  </p>
+
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-white/5 border border-white/10 rounded-2xl p-5"
+                >
+
+                  <p className="text-gray-300 leading-relaxed text-sm lg:text-base">
+                    Gluten-free options generate highly positive reviews.
+                  </p>
+
+                </motion.div>
+
+              </div>
+
+            </motion.div>
 
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* LOWER GRID */}
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
 
-            {/* Problems */}
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-5">
+            {/* LIVE ACTIVITY */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="bg-white/5 border border-white/10 rounded-3xl p-6 lg:p-8"
+            >
 
-              <h4 className="text-red-300 font-semibold mb-4">
-                Top Problems
-              </h4>
+              <div className="flex items-center justify-between mb-8">
 
-              <div className="space-y-3">
+                <h3 className="text-2xl lg:text-3xl font-bold">
+                  Live Activity
+                </h3>
 
-                {weeklyReport.topProblems.map((problem) => (
-
-                  <div
-                    key={problem}
-                    className="bg-black/20 rounded-lg px-3 py-2"
-                  >
-                    {problem}
-                  </div>
-
-                ))}
-
-              </div>
-
-            </div>
-
-            {/* Positive */}
-            <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-5">
-
-              <h4 className="text-green-300 font-semibold mb-4">
-                Positive Highlights
-              </h4>
-
-              <div className="space-y-3">
-
-                {weeklyReport.positiveHighlights.map((highlight) => (
-
-                  <div
-                    key={highlight}
-                    className="bg-black/20 rounded-lg px-3 py-2"
-                  >
-                    {highlight}
-                  </div>
-
-                ))}
+                <span className="text-green-400 text-sm lg:text-base">
+                  Live
+                </span>
 
               </div>
 
-            </div>
+              <div className="space-y-5">
 
-            {/* Recommendations */}
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-5">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-[#111827] border border-white/10 rounded-2xl p-5"
+                >
 
-              <h4 className="text-blue-300 font-semibold mb-4">
-                Recommended Actions
-              </h4>
+                  <p className="text-base lg:text-lg mb-2">
+                    New 5-star review received
+                  </p>
 
-              <div className="space-y-3">
+                  <p className="text-gray-400 text-sm lg:text-base">
+                    2 minutes ago
+                  </p>
 
-                {weeklyReport.recommendations.map((recommendation) => (
+                </motion.div>
 
-                  <div
-                    key={recommendation}
-                    className="bg-black/20 rounded-lg px-3 py-2"
-                  >
-                    {recommendation}
-                  </div>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-[#111827] border border-white/10 rounded-2xl p-5"
+                >
 
-                ))}
+                  <p className="text-base lg:text-lg mb-2">
+                    AI detected increase in waiting time complaints
+                  </p>
+
+                  <p className="text-gray-400 text-sm lg:text-base">
+                    18 minutes ago
+                  </p>
+
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-[#111827] border border-white/10 rounded-2xl p-5"
+                >
+
+                  <p className="text-base lg:text-lg mb-2">
+                    3 reviews require responses
+                  </p>
+
+                  <p className="text-gray-400 text-sm lg:text-base">
+                    35 minutes ago
+                  </p>
+
+                </motion.div>
 
               </div>
 
-            </div>
+            </motion.div>
+
+            {/* QUICK ACTIONS */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="bg-white/5 border border-white/10 rounded-3xl p-6 lg:p-8"
+            >
+
+              <h3 className="text-2xl lg:text-3xl font-bold mb-8">
+                Quick Actions
+              </h3>
+
+              <div className="space-y-5">
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+
+                  <Link
+                    href="/reviews"
+                    className="block bg-[#111827] hover:bg-white/10 transition border border-white/10 rounded-2xl p-5"
+                  >
+
+                    <h4 className="text-xl lg:text-2xl font-semibold mb-2">
+                      Reply to Reviews
+                    </h4>
+
+                    <p className="text-gray-400 text-sm lg:text-base">
+                      12 reviews still require responses.
+                    </p>
+
+                  </Link>
+
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+
+                  <Link
+                    href="/analytics"
+                    className="block bg-[#111827] hover:bg-white/10 transition border border-white/10 rounded-2xl p-5"
+                  >
+
+                    <h4 className="text-xl lg:text-2xl font-semibold mb-2">
+                      Open Analytics
+                    </h4>
+
+                    <p className="text-gray-400 text-sm lg:text-base">
+                      Analyze customer sentiment and trends.
+                    </p>
+
+                  </Link>
+
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+
+                  <Link
+                    href="/feedback-intelligence"
+                    className="block bg-[#111827] hover:bg-white/10 transition border border-white/10 rounded-2xl p-5"
+                  >
+
+                    <h4 className="text-xl lg:text-2xl font-semibold mb-2">
+                      View Private Feedback
+                    </h4>
+
+                    <p className="text-gray-400 text-sm lg:text-base">
+                      Check unresolved customer frustrations.
+                    </p>
+
+                  </Link>
+
+                </motion.div>
+
+              </div>
+
+            </motion.div>
 
           </div>
 
         </div>
 
-        {/* Analytics Chart */}
-        <div className="mt-10 bg-[#111827] border border-white/10 rounded-2xl p-6">
+      </main>
 
-          <div className="mb-8">
-
-            <h3 className="text-2xl font-semibold mb-2">
-              Review Activity
-            </h3>
-
-            <p className="text-gray-400">
-              Customer review volume during the week
-            </p>
-
-          </div>
-
-          <div className="h-[350px]">
-
-            <ResponsiveContainer width="100%" height="100%">
-
-              <LineChart data={chartData}>
-
-                <XAxis
-                  dataKey="name"
-                  stroke="#9CA3AF"
-                />
-
-                <YAxis
-                  stroke="#9CA3AF"
-                />
-
-                <Tooltip />
-
-                <Line
-                  type="monotone"
-                  dataKey="reviews"
-                  stroke="#3B82F6"
-                  strokeWidth={4}
-                  dot={{ r: 5 }}
-                />
-
-              </LineChart>
-
-            </ResponsiveContainer>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
+    </div>
   );
 }

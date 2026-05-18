@@ -7,50 +7,117 @@ export default function Sidebar() {
 
   const pathname = usePathname();
 
+  const links = [
+    {
+      name: "Dashboard",
+      href: "/dashboard",
+    },
+    {
+      name: "Analytics",
+      href: "/analytics",
+    },
+    {
+      name: "Reviews",
+      href: "/reviews",
+    },
+    {
+      name: "Feedback AI",
+      href: "/feedback-intelligence",
+    },
+    {
+      name: "QR Flow",
+      href: "/qr-flow",
+    },
+  ];
+
   return (
-    <aside className="w-72 border-r border-white/10 bg-[#0B1020] p-6 min-h-screen">
+    <>
+      {/* MOBILE TOPBAR */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#081120] border-b border-white/10 px-5 py-4">
 
-      <h1 className="text-3xl font-bold mb-10 text-white">
-        Review<span className="text-blue-500">Boost</span>
-      </h1>
+        <div className="flex items-center justify-between">
 
-      <nav className="space-y-3">
+          <h1 className="text-2xl font-bold text-white">
+            ReviewBoost
+          </h1>
 
-        <Link
-          href="/dashboard"
-          className={`block rounded-xl px-4 py-3 transition ${
-            pathname === "/dashboard"
-              ? "bg-blue-600 text-white"
-              : "hover:bg-white/5 text-gray-300"
-          }`}
-        >
-          Dashboard
-        </Link>
+        </div>
 
-        <Link
-          href="/reviews"
-          className={`block rounded-xl px-4 py-3 transition ${
-            pathname === "/reviews"
-              ? "bg-blue-600 text-white"
-              : "hover:bg-white/5 text-gray-300"
-          }`}
-        >
-          Reviews
-        </Link>
+        {/* MOBILE NAV */}
+        <div className="flex gap-3 overflow-x-auto mt-4 pb-1">
 
-        <Link
-          href="/analytics"
-          className={`block rounded-xl px-4 py-3 transition ${
-            pathname === "/analytics"
-              ? "bg-blue-600 text-white"
-              : "hover:bg-white/5 text-gray-300"
-          }`}
-        >
-          Analytics
-        </Link>
+          {links.map((link) => {
 
-      </nav>
+            const active = pathname === link.href;
 
-    </aside>
+            return (
+
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm transition ${
+                  active
+                    ? "bg-blue-600 text-white"
+                    : "bg-white/5 text-gray-300"
+                }`}
+              >
+                {link.name}
+              </Link>
+
+            );
+          })}
+
+        </div>
+
+      </div>
+
+      {/* DESKTOP SIDEBAR */}
+      <aside className="hidden lg:flex w-72 min-h-screen bg-[#0B1628] border-r border-white/10 p-8 flex-col">
+
+        {/* LOGO */}
+        <div className="mb-14">
+
+          <Link href="/dashboard">
+
+            <h1 className="text-4xl font-bold text-white">
+              ReviewBoost
+            </h1>
+
+          </Link>
+
+          <p className="text-gray-400 mt-3 leading-relaxed">
+            Reputation management platform
+          </p>
+
+        </div>
+
+        {/* NAVIGATION */}
+        <nav className="space-y-4">
+
+          {links.map((link) => {
+
+            const active = pathname === link.href;
+
+            return (
+
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`block px-5 py-4 rounded-2xl transition text-lg font-medium ${
+                  active
+                    ? "bg-blue-600 text-white"
+                    : "bg-white/5 text-gray-300 hover:bg-white/10"
+                }`}
+              >
+                {link.name}
+              </Link>
+
+            );
+          })}
+
+        </nav>
+
+      </aside>
+    </>
   );
 }

@@ -10,20 +10,19 @@ export default function HomePage() {
 
         <div className="inline-block border border-blue-500/30 bg-blue-500/10 text-blue-400 px-5 py-2 rounded-full text-sm mb-8">
 
-          Analisi della reputazione dei ristoranti basata sull'intelligenza artificiale
+          AI-powered reputation management for restaurants & hospitality
 
         </div>
 
-        <h1 className="text-6xl md:text-8xl font-bold leading-tight mb-8">
+        <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-8">
 
           Scopri cosa sta
           <br />
 
-          danneggiando{" "}
+          danneggiando la reputazione
+          <br />
 
           <span className="text-blue-500">
-            la reputazione
-            <br />
             del tuo ristorante.
           </span>
 
@@ -31,8 +30,8 @@ export default function HomePage() {
 
         <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-12">
 
-          ReviewBoost analizza il feedback dei clienti e mette in evidenza i problemi
-          che hanno un impatto reale sul tuo ristorante.
+          ReviewBoost analizza il feedback dei clienti e mette in evidenza
+          i problemi che stanno influenzando davvero la reputazione del tuo locale.
 
         </p>
 
@@ -47,10 +46,10 @@ export default function HomePage() {
           </Link>
 
           <Link
-            href="/reviews"
+            href="/leave-review"
             className="bg-white/10 hover:bg-white/20 transition px-8 py-4 rounded-2xl text-lg font-semibold"
           >
-            Dimostrazione dal vivo
+            Live Demo
           </Link>
 
         </div>
@@ -144,7 +143,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
-                  Promote gluten-free pizza more aggressively.
+                  Promote your best-rated dishes more aggressively.
                 </div>
 
               </div>

@@ -1,254 +1,387 @@
 "use client";
 
-import Sidebar from "@/components/Sidebar";
 import { useState } from "react";
+import Sidebar from "@/components/Sidebar";
+import { motion } from "framer-motion";
 
-import { reviews } from "@/data/reviews";
+type Review = {
+  id: number;
+  customer: string;
+  platform: string;
+  category: string;
+  review: string;
+  rating: number;
+  sentiment: "positive" | "negative";
+  aiReply?: string;
+};
 
 export default function ReviewsPage() {
 
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("all");
-
-  const [generatedReplies, setGeneratedReplies] = useState<
-    Record<number, string>
-  >({});
+  const [reviews, setReviews] = useState<Review[]>([
+    {
+      id: 1,
+      customer: "Margherita T.",
+      platform: "Google",
+      category: "Service",
+      review:
+        "Excellent vegan pizza and extremely kind staff. Quiet atmosphere and fast service.",
+      rating: 5,
+      sentiment: "positive",
+    },
+    {
+      id: 2,
+      customer: "Jessica",
+      platform: "Google",
+      category: "Food Quality",
+      review:
+        "Very disappointing experience. Food quality was terrible and the atmosphere was chaotic.",
+      rating: 1,
+      sentiment: "negative",
+    },
+    {
+      id: 3,
+      customer: "Michael",
+      platform: "Tripadvisor",
+      category: "Waiting Time",
+      review:
+        "The food was great but we waited almost 40 minutes before getting a table.",
+      rating: 2,
+      sentiment: "negative",
+    },
+  ]);
 
   const [loadingId, setLoadingId] = useState<number | null>(null);
 
-  async function generateAIReply(
-    reviewId: number,
-    reviewText: string
-  ) {
+  const generateReply = (
+    review: string,
+    sentiment: string
+  ) => {
 
-    setLoadingId(reviewId);
+    const lowerReview = review.toLowerCase();
 
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1500)
-    );
+    if (sentiment === "positive") {
 
-    let reply = "";
+      let response =
+        "Thank you so much for your kind review. ";
 
-    if (
-      reviewText.toLowerCase().includes("terrible") ||
-      reviewText.toLowerCase().includes("bad") ||
-      reviewText.toLowerCase().includes("disappointing") ||
-      reviewText.toLowerCase().includes("awful")
-    ) {
+      if (
+        lowerReview.includes("pizza") ||
+        lowerReview.includes("food")
+      ) {
+        response +=
+          "We’re delighted you enjoyed the food. ";
+      }
 
-      reply =
-        "We are truly sorry for your experience. Your feedback helps us improve and we hope to serve you better in the future.";
+      if (
+        lowerReview.includes("staff") ||
+        lowerReview.includes("service")
+      ) {
+        response +=
+          "Our team truly appreciates your compliments about the service. ";
+      }
 
-    } else {
+      response +=
+        "We hope to welcome you again very soon!";
 
-      reply =
-        "Thank you so much for your kind review. We are happy you enjoyed your experience and hope to see you again soon!";
+      return response;
     }
 
-    setGeneratedReplies((prev) => ({
-      ...prev,
-      [reviewId]: reply,
-    }));
+    let response =
+      "We are truly sorry for your experience. ";
 
-    setLoadingId(null);
-  }
+    if (
+      lowerReview.includes("slow") ||
+      lowerReview.includes("wait")
+    ) {
+      response +=
+        "We are actively working to improve waiting times. ";
+    }
 
-  const filteredReviews = reviews.filter((review) => {
+    if (
+      lowerReview.includes("food") ||
+      lowerReview.includes("pizza")
+    ) {
+      response +=
+        "We will carefully review the food quality issues you mentioned. ";
+    }
 
-    const matchesSearch =
-      review.review.toLowerCase().includes(search.toLowerCase());
+    response +=
+      "Thank you for helping us improve.";
 
-    const matchesFilter =
-      filter === "all"
-        ? true
-        : review.sentiment === filter;
+    return response;
+  };
 
-    return matchesSearch && matchesFilter;
+  const handleAIReply = async (id: number) => {
 
-  });
+    setLoadingId(id);
+
+    setTimeout(() => {
+
+      setReviews((prev) =>
+        prev.map((review) => {
+
+          if (review.id === id) {
+
+            return {
+              ...review,
+              aiReply: generateReply(
+                review.review,
+                review.sentiment
+              ),
+            };
+          }
+
+          return review;
+        })
+      );
+
+      setLoadingId(null);
+
+    }, 1200);
+  };
 
   return (
-    <main className="min-h-screen bg-[#081120] text-white flex">
+    <div className="flex">
 
       <Sidebar />
 
-      <section className="flex-1 p-8">
+      <main className="flex-1 min-h-screen bg-[#081120] text-white px-4 lg:px-8 py-24 lg:py-10">
 
-        {/* Header */}
-        <div className="mb-10">
+        <div className="max-w-7xl mx-auto">
 
-          <h1 className="text-5xl font-bold mb-3">
-            Reviews
-          </h1>
-
-          <p className="text-gray-400 text-lg">
-            Analyze customer feedback and sentiment
-          </p>
-
-        </div>
-
-        {/* Search */}
-        <div className="mb-6">
-
-          <input
-            type="text"
-            placeholder="Search reviews..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#111827] border border-white/10 rounded-2xl px-5 py-4 outline-none"
-          />
-
-        </div>
-
-        {/* Filters */}
-        <div className="flex gap-4 mb-8">
-
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-5 py-2 rounded-xl transition ${
-              filter === "all"
-                ? "bg-blue-600"
-                : "bg-[#111827] border border-white/10"
-            }`}
+          {/* HEADER */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-12"
           >
-            All
-          </button>
 
-          <button
-            onClick={() => setFilter("positive")}
-            className={`px-5 py-2 rounded-xl transition ${
-              filter === "positive"
-                ? "bg-green-600"
-                : "bg-[#111827] border border-white/10"
-            }`}
+            <p className="text-blue-400 mb-3 text-sm lg:text-base">
+              AI Review Management
+            </p>
+
+            <h1 className="text-4xl lg:text-6xl font-bold mb-4">
+              Public Reviews
+            </h1>
+
+            <p className="text-gray-400 text-base lg:text-xl">
+              Monitor public customer reviews and generate AI-powered replies.
+            </p>
+
+          </motion.div>
+
+          {/* TOP METRICS */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-10"
           >
-            Positive
-          </button>
 
-          <button
-            onClick={() => setFilter("negative")}
-            className={`px-5 py-2 rounded-xl transition ${
-              filter === "negative"
-                ? "bg-red-600"
-                : "bg-[#111827] border border-white/10"
-            }`}
-          >
-            Negative
-          </button>
-
-        </div>
-
-        {/* Reviews */}
-        <div className="space-y-5">
-
-          {filteredReviews.map((review) => (
-
-            <div
-              key={review.id}
-              className="bg-[#111827] border border-white/10 rounded-2xl p-6"
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              className="bg-gradient-to-br from-blue-500/20 to-blue-900/20 border border-blue-500/20 rounded-3xl p-5 lg:p-7"
             >
 
-              <div className="flex items-center justify-between mb-4">
+              <p className="text-gray-300 mb-4 text-sm lg:text-base">
+                Reviews Monitored
+              </p>
 
-                <div>
+              <h2 className="text-4xl lg:text-6xl font-bold mb-3">
+                248
+              </h2>
 
-                  <h3 className="text-xl font-semibold">
-                    {review.name}
-                  </h3>
+              <p className="text-blue-400 text-sm lg:text-base">
+                Google & Tripadvisor
+              </p>
 
-                  <div className="flex items-center gap-3 mt-1">
+            </motion.div>
 
-                    <p className="text-gray-400 text-sm">
-                      {review.issue}
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              className="bg-gradient-to-br from-green-500/20 to-green-900/20 border border-green-500/20 rounded-3xl p-5 lg:p-7"
+            >
+
+              <p className="text-gray-300 mb-4 text-sm lg:text-base">
+                Positive Reviews
+              </p>
+
+              <h2 className="text-4xl lg:text-6xl font-bold mb-3">
+                82%
+              </h2>
+
+              <p className="text-green-400 text-sm lg:text-base">
+                Strong customer sentiment
+              </p>
+
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              className="bg-gradient-to-br from-red-500/20 to-red-900/20 border border-red-500/20 rounded-3xl p-5 lg:p-7"
+            >
+
+              <p className="text-gray-300 mb-4 text-sm lg:text-base">
+                Negative Reviews
+              </p>
+
+              <h2 className="text-4xl lg:text-6xl font-bold mb-3">
+                18%
+              </h2>
+
+              <p className="text-red-400 text-sm lg:text-base">
+                Requires management attention
+              </p>
+
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white/5 border border-white/10 rounded-3xl p-5 lg:p-7"
+            >
+
+              <p className="text-gray-300 mb-4 text-sm lg:text-base">
+                Pending AI Replies
+              </p>
+
+              <h2 className="text-4xl lg:text-6xl font-bold mb-3">
+                12
+              </h2>
+
+              <p className="text-yellow-400 text-sm lg:text-base">
+                Awaiting response
+              </p>
+
+            </motion.div>
+
+          </motion.div>
+
+          {/* REVIEWS */}
+          <div className="space-y-8">
+
+            {reviews.map((review, index) => (
+
+              <motion.div
+                key={review.id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.1,
+                }}
+                whileHover={{ scale: 1.01 }}
+                className="bg-white/5 border border-white/10 rounded-3xl p-6 lg:p-8"
+              >
+
+                {/* TOP */}
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5 mb-6">
+
+                  <div>
+
+                    <div className="flex flex-wrap items-center gap-3 mb-4">
+
+                      <h2 className="text-2xl lg:text-3xl font-bold">
+                        {review.customer}
+                      </h2>
+
+                      <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-xl text-sm">
+                        {review.platform}
+                      </span>
+
+                      <span className="bg-white/10 px-3 py-1 rounded-xl text-sm">
+                        {review.category}
+                      </span>
+
+                    </div>
+
+                    <p className="text-gray-300 text-base lg:text-xl leading-relaxed max-w-4xl">
+                      {review.review}
                     </p>
 
-                    <span className="text-xs bg-blue-500/10 text-blue-300 px-2 py-1 rounded-lg">
-                      {review.platform}
-                    </span>
+                  </div>
 
+                  <div className="text-yellow-400 text-2xl lg:text-3xl">
+                    {"★".repeat(review.rating)}
                   </div>
 
                 </div>
 
-                <div className="text-yellow-400 text-lg">
-                  {"★".repeat(review.rating)}
+                {/* PRIORITY */}
+                <div className="mb-6">
+
+                  <span
+                    className={`px-4 py-2 rounded-xl text-sm ${
+                      review.sentiment === "negative"
+                        ? "bg-red-500/20 text-red-400"
+                        : "bg-green-500/20 text-green-400"
+                    }`}
+                  >
+                    {review.sentiment === "negative"
+                      ? "High Priority"
+                      : "Positive Review"}
+                  </span>
+
                 </div>
 
-              </div>
-
-              <p className="text-gray-300 leading-relaxed mb-5">
-                {review.review}
-              </p>
-
-              <div className="flex items-center justify-between">
-
-                <span
-                  className={`px-4 py-2 rounded-full text-sm ${
-                    review.sentiment === "positive"
-                      ? "bg-green-500/10 text-green-400"
-                      : review.sentiment === "negative"
-                      ? "bg-red-500/10 text-red-400"
-                      : "bg-yellow-500/10 text-yellow-400"
-                  }`}
+                {/* BUTTON */}
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() =>
+                    handleAIReply(review.id)
+                  }
+                  className="bg-blue-600 hover:bg-blue-700 transition px-6 py-4 rounded-2xl text-base lg:text-lg font-semibold mb-6"
                 >
-                  {review.sentiment}
-                </span>
 
-                <div className="flex gap-3">
+                  {loadingId === review.id
+                    ? "Generating AI Reply..."
+                    : "Generate AI Reply"}
 
-                  <button
-                    onClick={() =>
-                      generateAIReply(
-                        review.id,
-                        review.review
-                      )
-                    }
-                    className="bg-blue-600 hover:bg-blue-700 transition px-5 py-2 rounded-xl"
-                  >
+                </motion.button>
 
-                    {loadingId === review.id
-                      ? "Generating..."
-                      : "AI Reply"}
+                {/* AI REPLY */}
+                <motion.div
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-[#111827] border border-white/10 rounded-2xl p-5 lg:p-6"
+                >
 
-                  </button>
+                  <div className="flex items-center justify-between mb-4">
 
-                  <a
-                    href={review.link}
-                    target="_blank"
-                    className="bg-white/10 hover:bg-white/20 transition px-5 py-2 rounded-xl"
-                  >
-                    Open Review
-                  </a>
+                    <h3 className="text-xl lg:text-2xl font-bold">
+                      AI Suggested Reply
+                    </h3>
 
-                </div>
+                    <span className="text-blue-400 text-sm">
+                      AI generated
+                    </span>
 
-              </div>
+                  </div>
 
-              {/* AI Reply Box */}
-              <div className="mt-5 bg-white/5 border border-white/10 rounded-xl p-4">
+                  <p className="text-gray-300 text-sm lg:text-lg leading-relaxed">
 
-                <p className="text-sm text-gray-400 mb-2">
-                  AI Reply
-                </p>
+                    {review.aiReply ||
+                      "No AI reply generated yet."}
 
-                <p className="text-gray-200 whitespace-pre-wrap">
+                  </p>
 
-                  {generatedReplies[review.id]
-                    ? generatedReplies[review.id]
-                    : "No reply generated yet."}
+                </motion.div>
 
-                </p>
+              </motion.div>
 
-              </div>
+            ))}
 
-            </div>
-
-          ))}
+          </div>
 
         </div>
 
-      </section>
+      </main>
 
-    </main>
+    </div>
   );
 }
